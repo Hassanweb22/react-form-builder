@@ -5,16 +5,17 @@ import {
   defaultAnimateLayoutChanges,
 } from '@dnd-kit/sortable';
 
-import Input from '../ui/Input';
-import { Button } from '../ui/Button';
+import Input from '../tailwindUi/Input';
+// import { Button } from '../ui/Button';
+import Button from '../tailwindUi/Button';
 import Tooltip from '../ui/Tooltip';
-import { Switch } from '../ui/Switch';
+// import { Switch } from '../ui/Switch';
 import { Label } from '../ui/Label';
 import { Separator } from '../ui/Separator';
-import { Textarea } from '../ui/Textarea';
+import Textarea from '../tailwindUi/Textarea';
 // import RichTextEditor from '../shared/RichTextEditor';
 import BubbleMenuEditor from '../shared/BubbleMenuEditor';
-import { Checkbox } from '../ui/Checkbox';
+// import { Checkbox } from '../ui/Checkbox';
 import { DatePicker } from '../shared/DatePicker';
 import { DateRangePicker } from '../shared/DateRangePicker';
 import Options from './Options';
@@ -31,6 +32,10 @@ import { RadioGroup, RadioGroupItem } from '../ui/RadioGroup';
 import { Combobox } from '../ui/Combobox';
 import type { ControllerRenderProps, FieldValues } from 'react-hook-form';
 import { FormElementsType } from '@/types';
+import Switch from '../tailwindUi/Switch';
+import CheckBox from '../tailwindUi/Checkbox';
+import { Checkbox } from '../ui/Checkbox';
+import { useEffect } from 'react';
 
 const animateLayoutChanges: AnimateLayoutChanges = args => {
   const { isSorting, wasDragging } = args;
@@ -72,6 +77,7 @@ export default function FormElementCard({
     transition,
   };
 
+
   return (
     <article
       className={`relative flex gap-2 rounded-md bg-white py-3 shadow ${isDragging ? 'z-10' : ''
@@ -99,13 +105,28 @@ export default function FormElementCard({
           <div className="flex w-full items-center gap-5">
             {type === 'switch' ? (
               <Switch
-                checked={field?.value}
-                onCheckedChange={field?.onChange}
+                {...(field && ({
+                  checked: field?.value,
+                  onCheckedChange: field?.onChange
+                }))}
               />
+              // ) : type === 'button' ? (
+              //   <Button
+              //     variant="ghost"
+              //     size="icon"
+              //     className="hover:bg-destructive/5 rounded-full"
+              //     onClick={() => {
+              //       removeFormElement(id);
+              //     }}
+              //   >
+              //     Button
+              //   </Button>
             ) : type === 'checkbox' ? (
-              <Checkbox
-                checked={field?.value}
-                onCheckedChange={field?.onChange}
+              <CheckBox
+                {...(field && ({
+                  checked: field?.value,
+                  onCheckedChange: field?.onChange
+                }))}
               />
             ) : null}
             <BubbleMenuEditor
@@ -130,17 +151,6 @@ export default function FormElementCard({
               value={field?.value ?? ''}
               onChange={field?.onChange}
             /> */}
-            {/* <p contentEditable='true' className='text-lg font-semibold'
-              onBlur={e => {
-                console.log(e.currentTarget.innerText.trim());
-                updateLabel(id, e.currentTarget.innerText.trim())
-              }}
-            >
-              {['heading', 'description'].includes(type)
-                ? label
-                : 'Question or Text'
-              }
-            </p> */}
           </div>
           {isView ? null : (
             <div className="flex items-center">
@@ -164,10 +174,9 @@ export default function FormElementCard({
               <Separator orientation="vertical" className="mx-4 h-7" />
               <Tooltip asChild title="Delete">
                 <Button
-                  type="button"
                   variant="ghost"
                   size="icon"
-                  className="rounded-full hover:bg-destructive/5"
+                  className="hover:bg-destructive/5 rounded-full"
                   onClick={() => {
                     removeFormElement(id);
                   }}
@@ -182,23 +191,31 @@ export default function FormElementCard({
           <Input
             placeholder="Single line text"
             required={field ? required : false}
-            value={field?.value ?? ''}
-            onChange={field?.onChange}
+            // value={field?.value || ''}
+            // onChange={field?.onChange}
+            {...(field && ({
+              checked: field?.value,
+              onChange: field?.onChange
+            }))}
           />
         ) : type === 'number' ? (
           <Input
             type="number"
             placeholder="Number"
             required={field ? required : false}
-            value={field?.value ?? ''}
-            onChange={field?.onChange}
+            {...(field && ({
+              checked: field?.value,
+              onChange: field?.onChange
+            }))}
           />
         ) : type === 'multi-line' ? (
           <Textarea
             placeholder="Multi line text..."
             required={field ? required : false}
-            value={field?.value ?? ''}
-            onChange={field?.onChange}
+            {...(field && ({
+              checked: field?.value,
+              onChange: field?.onChange
+            }))}
           />
         ) :
           // type === 'rich-text' ? (
@@ -215,7 +232,7 @@ export default function FormElementCard({
                   <Checkbox
                     id={value}
                     checked={field?.value?.includes(label) ?? false}
-                    onCheckedChange={checked => {
+                    onCheckedChange={(checked: any) => {
                       if (checked) field?.onChange([...field.value, label]);
                       else
                         field?.onChange(
@@ -240,33 +257,54 @@ export default function FormElementCard({
             >
               {options?.map(({ label, value }) => (
                 <div key={value} className="flex items-center space-x-3">
-                  <RadioGroupItem value={value} id={value} />
+                  {/* <RadioGroupItem value={value} id={value} />
                   <Label
                     htmlFor={value}
                     className="flex h-5 items-center font-normal"
                   >
                     {label}
-                  </Label>
+                  </Label> */}
+                  <input
+                    id={value}
+                    className="relative float-left mt-0.5 h-5 w-5 appearance-none rounded-full border-2 border-solid border-neutral-300 before:pointer-events-none before:absolute before:h-4 before:w-4 before:scale-0 before:rounded-full before:bg-transparent before:opacity-0 before:shadow-[0px_0px_0px_13px_transparent] before:content-[''] after:absolute after:z-[1] after:block after:h-4 after:w-4 after:rounded-full after:content-[''] checked:border-primary checked:before:opacity-[0.16] checked:after:absolute checked:after:left-1/2 checked:after:top-1/2 checked:after:h-[0.625rem] checked:after:w-[0.625rem] checked:after:rounded-full checked:after:border-primary checked:after:bg-primary checked:after:content-[''] checked:after:[transform:translate(-50%,-50%)] hover:cursor-pointer hover:before:opacity-[0.04] hover:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:shadow-none focus:outline-none focus:ring-0 focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:before:transition-[box-shadow_0.2s,transform_0.2s] checked:focus:border-primary checked:focus:before:scale-100 checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca] checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s]"
+                    type="radio"
+                    name="flexRadioDefault"
+                  />
+                  <label
+                    htmlFor={value}
+                    className="mt-px inline-block pl-[0.15rem] hover:cursor-pointer"
+                  >
+                    {label}
+                  </label>
                 </div>
               ))}
             </RadioGroup>
           ) : type === 'dropdown' ? (
-            <Select
-              value={field?.value}
-              onValueChange={field?.onChange}
-              required={field ? required : false}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select an option..." />
-              </SelectTrigger>
-              <SelectContent>
-                {options?.map(({ label, value }) => (
-                  <SelectItem value={value} key={value}>
-                    {label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            // <Select
+            //   value={field?.value}
+            //   onValueChange={field?.onChange}
+            //   required={field ? required : false}
+            // >
+            //   <SelectTrigger>
+            //     <SelectValue placeholder="Select an option..." />
+            //   </SelectTrigger>
+            //   <SelectContent>
+            //     {options?.map(({ label, value }) => (
+            //       <SelectItem value={value} key={value}>
+            //         {label}
+            //       </SelectItem>
+            //     ))}
+            //   </SelectContent>
+            // </Select>
+            <select data-te-select-init>
+              {/* <option value="1">One</option> */}
+              {options?.map(({ label, value }) => (
+                <option value={value} key={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+
           ) : type === 'combobox' && options ? (
             <Combobox options={options} field={field} />
           ) : type === 'date' ? (

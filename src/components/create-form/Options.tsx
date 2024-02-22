@@ -1,9 +1,9 @@
 import { CircleIcon, PlusIcon, XIcon } from 'lucide-react';
 import { shallow } from 'zustand/shallow';
 
-import { Checkbox } from '../ui/Checkbox';
-import Input from '../ui/Input';
-import { Button } from '../ui/Button';
+import Checkbox from '../tailwindUi/Checkbox';
+import Input from '../tailwindUi/Input';
+import Button from '../tailwindUi/Button';
 import Tooltip from '../ui/Tooltip';
 import { useFormPlaygroundStore } from '../../stores/formPlaygroundStore';
 
@@ -41,7 +41,6 @@ export default function Options({ type, id }: Props) {
           {options.length > 1 ? (
             <Tooltip asChild title="Remove">
               <Button
-                type="button"
                 size="icon"
                 variant="ghost"
                 className="h-8 w-8 rounded-full"
@@ -55,7 +54,6 @@ export default function Options({ type, id }: Props) {
       ))}
       <li>
         <Button
-          type="button"
           variant="ghost"
           className="gap-2"
           onClick={() => addOption(id)}

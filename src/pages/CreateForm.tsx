@@ -8,14 +8,18 @@ import {
     FormElementButton,
     FormElementButtonProps,
 } from '../components/create-form/DraggableButton';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import FormPlayground from '../components/create-form/FormPlayground';
 import { EyeIcon, HammerIcon } from 'lucide-react';
 import { useFormPlaygroundStore } from '../stores/formPlaygroundStore';
 import toast from 'react-hot-toast';
-import { Switch } from '../components/ui/Switch';
+// import { Switch } from '../components/ui/Switch';
 import FormPreview from '../components/create-form/FormPreview';
 import { FormType } from '@/types';
+import Switch from '@/components/tailwindUi/Switch';
+import Input from '@/components/tailwindUi/Input';
+import Button from '@/components/tailwindUi/Button';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/AlertDialog';
 
 interface Props {
     formType?: 'add' | 'edit';
@@ -26,7 +30,7 @@ export default function CreateForm({ formType = 'add', form }: Props) {
 
     const [isPreview, setIsPreview] = useState(false);
 
-    // const [formName, setFormName] = useState(form?.name ?? '');
+    const [formName, setFormName] = useState(form?.name ?? '');
     const [activeButton, setActiveButton] =
         useState<FormElementButtonProps | null>(null);
     const [isDropped, setIsDropped] = useState(false);
@@ -35,7 +39,7 @@ export default function CreateForm({ formType = 'add', form }: Props) {
     const removeAllFormElements = useFormPlaygroundStore(
         state => state.removeAllFormElements,
     );
-    const formElements = useFormPlaygroundStore(state => state.formElements);
+    const { formElements, formJsx } = useFormPlaygroundStore(state => state);
 
     useEffect(() => {
         return () => {
@@ -49,6 +53,14 @@ export default function CreateForm({ formType = 'add', form }: Props) {
             coordinateGetter: sortableKeyboardCoordinates,
         }),
     );
+
+
+    useEffect(() => {
+        if (formJsx) {
+            console.log(formJsx);
+        }
+    }, [formJsx])
+
 
 
     return (
@@ -78,23 +90,27 @@ export default function CreateForm({ formType = 'add', form }: Props) {
                     className="flex flex-grow flex-col"
                     onSubmit={e => {
                         e.preventDefault();
+                        console.log('submitting');
                         if (formElements.length === 0) {
                             toast.error('Form is empty!');
                             return;
                         }
+                        setTimeout(() => {
+                            setIsPreview(true);
+                        }, 500);
                         // mutate();
                     }}
                 >
-                    <section className="mb-3 flex items-center justify-end">
-                        {/* <div className="flex items-center gap-3 whitespace-nowrap">
-                            <label className="font-medium">Form Name:</label>
+                    <section className="mb-3 flex items-center justify-between">
+                        <div className="flex items-center gap-3 whitespace-nowrap">
+                            {/* <label className="font-medium">Form Name:</label>
                             <Input
                                 required
                                 placeholder="Enter form name"
                                 value={formName}
                                 onChange={e => setFormName(e.target.value)}
-                            />
-                        </div> */}
+                            /> */}
+                        </div>
                         <div className="flex items-center gap-4 text-sm font-medium">
                             <div
                                 className={`flex items-center gap-2 transition-colors ${isPreview ? '' : 'text-primary'
@@ -104,9 +120,10 @@ export default function CreateForm({ formType = 'add', form }: Props) {
                                 <span>Builder</span>
                             </div>
                             <Switch
-                                className="data-[state=unchecked]:bg-primary"
+                                // className="data-[state=unchecked]:bg-primary"
                                 checked={isPreview}
                                 onCheckedChange={setIsPreview}
+                            // onChange={setIsPreview}
                             />
                             <div
                                 className={`flex items-center gap-2 transition-colors ${isPreview ? 'text-primary' : ''
@@ -126,13 +143,13 @@ export default function CreateForm({ formType = 'add', form }: Props) {
                             isUpdate={formType === 'edit'}
                         />
                     )}
-                    {/* <section className="mt-5 flex items-center gap-5 self-end">
-                        {isDemo && <DemoInfoCard />}
-                        {form ? (
+                    <section className="mt-5 flex items-center gap-5 self-end">
+                        {/* {isDemo && <DemoInfoCard />} */}
+                        {/* {form ? (
                             <Button onClick={() => navigate('/my-forms')} variant="outline">
                                 Cancel
                             </Button>
-                        ) : null}
+                        ) : null} */}
                         {formElements.length !== 0 ? (
                             <AlertDialog>
                                 <AlertDialogTrigger asChild>
@@ -161,12 +178,13 @@ export default function CreateForm({ formType = 'add', form }: Props) {
                         <Button
                             // disabled={isDemo}
                             // isLoading={isPending}
-                            className={isDemo ? 'gap-2.5' : ''}
+                            // className={isDemo ? 'gap-2.5' : ''}
+                            type="submit"
                         >
-                            {isDemo && <LockIcon className="h-[18px] w-[18px]" />}
+                            {/* {isDemo && <LockIcon className="h-[18px] w-[18px]" />} */}
                             <span>{form ? 'Update Form' : 'Save Form'}</span>
                         </Button>
-                    </section> */}
+                    </section>
                 </form>
             </div>
             <DragOverlay modifiers={[restrictToWindowEdges]}>

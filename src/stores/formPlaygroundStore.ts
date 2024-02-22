@@ -4,11 +4,14 @@ import { produce } from 'immer';
 import { v4 as uuid } from 'uuid';
 import { arrayMove } from '@dnd-kit/sortable';
 import { FormElementsType } from '@/types';
+import React, { Children, ReactNode } from 'react';
 // import type { FormElementsType } from '@form-builder/validation/types';
 
 
 interface FormPlaygroundStoreType {
     formElements: FormElementsType[];
+    formJsx: ChildNode | null,
+    setFormRefNodes: (nodes: ChildNode) => void;
     setFormElements: (formElements: FormElementsType[]) => void;
     addFormElement: (label: string, type: string) => void;
     moveFormElement: (oldIndex: number, newIndex: number) => void;
@@ -24,6 +27,13 @@ interface FormPlaygroundStoreType {
 export const useFormPlaygroundStore = createWithEqualityFn(
     immer<FormPlaygroundStoreType>(set => ({
         formElements: [],
+        formJsx: null,
+        setFormRefNodes: (nodes: ChildNode) =>
+            set(
+                produce((draft: FormPlaygroundStoreType) => {
+                    draft.formJsx = nodes;
+                }),
+            ),
         setFormElements: formElements =>
             set(
                 produce((draft: FormPlaygroundStoreType) => {

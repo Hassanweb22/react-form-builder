@@ -1,9 +1,19 @@
 import { useFormPlaygroundStore } from '../../stores/formPlaygroundStore';
 import FormElementCard from './FormElementCard';
 import { ScrollArea } from '../ui/ScrollArea';
+import { forwardRef, useEffect, memo, useRef } from 'react';
 
-export default function FormPreview() {
-  const formElements = useFormPlaygroundStore(state => state.formElements);
+const FormPreview = forwardRef(() => {
+  const { formElements, setFormRefNodes } = useFormPlaygroundStore(state => state);
+
+  const formRef = useRef<HTMLUListElement | null>(null)
+
+  useEffect(() => {
+    if (formRef?.current) {
+      console.log(formRef.current);
+      setFormRefNodes(formRef?.current);
+    }
+  }, [formRef])
 
   return (
     <section className="flex-grow rounded-lg border-2 border-dashed border-slate-300 bg-muted">
@@ -13,7 +23,7 @@ export default function FormPreview() {
         </p>
       ) : (
         <ScrollArea className="h-[calc(100vh-212px)]">
-          <ul className="space-y-5 p-5">
+          <ul className="space-y-5 p-5" ref={formRef}>
             {formElements.map(element => (
               <li key={element.id}>
                 <FormElementCard formElement={element} isView />
@@ -24,4 +34,6 @@ export default function FormPreview() {
       )}
     </section>
   );
-}
+});
+
+export default memo(FormPreview);
